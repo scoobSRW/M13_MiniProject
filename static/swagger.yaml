@@ -1,0 +1,469 @@
+openapi: 3.0.0
+info:
+  title: Factory Management System API
+  version: 1.0.0
+  description: API documentation for the Factory Management System, managing employees, products, customers, orders, customer accounts, and production.
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+paths:
+  /employees:
+    get:
+      summary: List all employees
+      responses:
+        '200':
+          description: A list of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCreate'
+      responses:
+        '201':
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products:
+    get:
+      summary: List all products
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /customers:
+    get:
+      summary: List all customers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreate'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update an existing customer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdate'
+      responses:
+        '200':
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a customer
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the customer to delete
+      responses:
+        '200':
+          description: Customer deleted successfully
+        '404':
+          description: Customer not found
+
+  /customer-accounts:
+    get:
+      summary: List all customer accounts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of customer accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerAccount'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new customer account
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAccountCreate'
+      responses:
+        '201':
+          description: Customer account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAccount'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a customer account
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the customer account to delete
+      responses:
+        '200':
+          description: Customer account deleted successfully
+        '404':
+          description: Customer account not found
+        '500':
+          description: Internal server error
+
+  /orders/{id}:
+    get:
+      summary: Retrieve order by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the order
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+        '401':
+          description: Unauthorized access
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        position:
+          type: string
+    EmployeeCreate:
+      type: object
+      required:
+        - name
+        - position
+      properties:
+        name:
+          type: string
+        position:
+          type: string
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+    ProductCreate:
+      type: object
+      required:
+        - name
+        - price
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    CustomerCreate:
+      type: object
+      required:
+        - name
+        - email
+        - phone
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    CustomerUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+
+    CustomerAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        customer_id:
+          type: integer
+    CustomerAccountCreate:
+      type: object
+      required:
+        - username
+        - password
+        - customer_id
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        customer_id:
+          type: integer
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+        total_price:
+          type: number
+          format: float
+    OrderCreate:
+      type: object
+      required:
+        - customer_id
+        - product_id
+        - quantity
+      properties:
+        customer_id:
+          type: integer
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+
+    Production:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        quantity_produced:
+          type: integer
+        date_produced:
+          type: string
+          format: date
+    ProductionCreate:
+      type: object
+      required:
+        - product_id
+        - quantity_produced
+        - date_produced
+      properties:
+        product_id:
+          type: integer
+        quantity_produced:
+          type: integer
+        date_produced:
+          type: string
+          format: date
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer
+      example:
+        error: "InvalidInput"
+        message: "The request body is invalid."
+        code: 400
