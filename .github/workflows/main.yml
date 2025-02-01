@@ -1,38 +1,43 @@
-name: CI Workflow
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push to the main branch
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu image
+  build-and-test:
+    name: Build and Test Application
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2  # Checkout the repository's code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.8'  # Use Python 3.8 (you can adjust the version as needed)
+          python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Install dependencies from requirements.txt
+          pip install -r requirements.txt
 
-      - name: Run unit tests with unittest
+      - name: Lint Code (Optional)
         run: |
-          python -m unittest discover -s tests  # Discover and run unittests in the tests directory
+          pip install flake8
+          flake8 app --ignore=E501  # Ignore long line warnings
 
-      - name: Run tests with pytest
-        run: |
-          pip install pytest  # Install pytest
-          pytest --maxfail=1 --disable-warnings -q  # Run tests with pytest (fail after 1 failure, no warnings, quiet output)
+      - name: Run Unit Tests (unittest)
+        run: python -m unittest discover tests
 
-    # Fail the workflow if any tests fail
-    if: failure()
-    continue-on-error: false  # This will ensure the job fails on any test failure
+      - name: Run Pytest
+        run: pytest tests/ --disable-warnings
+
+      - name: Ensure Application Builds
+        run: python run.py  # Ensure the Flask app starts up without errors
 
