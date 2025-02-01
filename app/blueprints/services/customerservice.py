@@ -1,4 +1,4 @@
-from app.models.models import Customer, CustomerAccount, db
+from app.models.models import Customer, db
 
 
 def create_customer(data):

@@ -1,10 +1,7 @@
 import os
 
 from flask import Flask
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 
 from app.models.models import db
 
@@ -22,7 +19,6 @@ def create_app(config_class):
     # set extensions
     db.init_app(app)
     Migrate(app, db)
-    limiter = Limiter(get_remote_address, app=app)
 
     # validate blueprints
     from app.blueprints.customers.routes import customers_bp
