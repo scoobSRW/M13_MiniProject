@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"  # Update if running on a different port or domain
+
 
 class TestCustomerEndpoints(unittest.TestCase):
     CUSTOMER_URL = f"{BASE_URL}/api/customers"
@@ -25,8 +27,13 @@ class TestCustomerEndpoints(unittest.TestCase):
         # Simulate a successful response
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [
-            {"id": 1, "name": "Alice", "email": "alice@example.com", "phone": "1234567890"},
-            {"id": 2, "name": "Bob", "email": "bob@example.com", "phone": "0987654321"}
+            {
+                "id": 1,
+                "name": "Alice",
+                "email": "alice@example.com",
+                "phone": "1234567890",
+            },
+            {"id": 2, "name": "Bob", "email": "bob@example.com", "phone": "0987654321"},
         ]
 
         response = requests.get(self.CUSTOMER_URL)
@@ -37,7 +44,12 @@ class TestCustomerEndpoints(unittest.TestCase):
     def test_get_customer(self, mock_get):
         # Simulate a successful response
         mock_get.return_value.status_code = 200
-        mock_get.return_value.json.return_value = {"id": 1, "name": "Alice", "email": "alice@example.com", "phone": "1234567890"}
+        mock_get.return_value.json.return_value = {
+            "id": 1,
+            "name": "Alice",
+            "email": "alice@example.com",
+            "phone": "1234567890",
+        }
 
         response = requests.get(f"{self.CUSTOMER_URL}/1")
         self.assertEqual(response.status_code, 200)
@@ -51,7 +63,11 @@ class TestCustomerEndpoints(unittest.TestCase):
             "message": "Customer updated successfully"
         }
 
-        payload = {"name": "Alice Updated", "email": "aliceupdated@example.com", "phone": "1111111111"}
+        payload = {
+            "name": "Alice Updated",
+            "email": "aliceupdated@example.com",
+            "phone": "1111111111",
+        }
         response = requests.put(f"{self.CUSTOMER_URL}/1", json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn("Customer updated successfully", response.json()["message"])
@@ -67,6 +83,7 @@ class TestCustomerEndpoints(unittest.TestCase):
         response = requests.delete(f"{self.CUSTOMER_URL}/1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Customer deleted successfully", response.json()["message"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,8 +1,11 @@
-import jwt
 import datetime
+
+import jwt
+
 from config import DevelopmentConfig
 
 SECRET_KEY = DevelopmentConfig.SECRET_KEY
+
 
 def encode_token(user_id, roles):
     """
@@ -10,15 +13,16 @@ def encode_token(user_id, roles):
     """
     try:
         payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-            'iat': datetime.datetime.utcnow(),
-            'sub': user_id,
-            'roles': roles
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            "iat": datetime.datetime.utcnow(),
+            "sub": user_id,
+            "roles": roles,
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         return token
     except Exception as e:
         return str(e)
+
 
 def decode_token(token):
     """

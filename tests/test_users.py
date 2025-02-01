@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"  # Update if running on a different port or domain
+
 
 class TestUserEndpoints(unittest.TestCase):
     USER_URL = f"{BASE_URL}/users"
@@ -26,7 +28,7 @@ class TestUserEndpoints(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [
             {"id": 1, "username": "newuser"},
-            {"id": 2, "username": "testuser"}
+            {"id": 2, "username": "testuser"},
         ]
 
         response = requests.get(self.USER_URL)
@@ -67,6 +69,7 @@ class TestUserEndpoints(unittest.TestCase):
         response = requests.delete(f"{self.USER_URL}/1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("User deleted successfully", response.json()["message"])
+
 
 if __name__ == "__main__":
     unittest.main()

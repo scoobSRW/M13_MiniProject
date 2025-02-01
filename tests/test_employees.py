@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"  # Update if running on a different port or domain
+
 
 class TestEmployeeEndpoints(unittest.TestCase):
     EMPLOYEE_URL = f"{BASE_URL}/api/employees"
@@ -26,7 +28,7 @@ class TestEmployeeEndpoints(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [
             {"id": 1, "name": "John", "position": "Developer"},
-            {"id": 2, "name": "Sarah", "position": "Manager"}
+            {"id": 2, "name": "Sarah", "position": "Manager"},
         ]
 
         response = requests.get(self.EMPLOYEE_URL)
@@ -37,7 +39,11 @@ class TestEmployeeEndpoints(unittest.TestCase):
     def test_get_employee(self, mock_get):
         # Simulate a successful response
         mock_get.return_value.status_code = 200
-        mock_get.return_value.json.return_value = {"id": 1, "name": "John", "position": "Developer"}
+        mock_get.return_value.json.return_value = {
+            "id": 1,
+            "name": "John",
+            "position": "Developer",
+        }
 
         response = requests.get(f"{self.EMPLOYEE_URL}/1")
         self.assertEqual(response.status_code, 200)
@@ -67,6 +73,7 @@ class TestEmployeeEndpoints(unittest.TestCase):
         response = requests.delete(f"{self.EMPLOYEE_URL}/1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Employee deleted successfully", response.json()["message"])
+
 
 if __name__ == "__main__":
     unittest.main()

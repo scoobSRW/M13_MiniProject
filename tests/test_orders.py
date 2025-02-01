@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"  # Update if running on a different port or domain
+
 
 class TestOrderEndpoints(unittest.TestCase):
     ORDER_URL = f"{BASE_URL}/api/orders"
@@ -26,7 +28,7 @@ class TestOrderEndpoints(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [
             {"id": 1, "customer_id": 1, "product_id": 1, "quantity": 2},
-            {"id": 2, "customer_id": 2, "product_id": 2, "quantity": 1}
+            {"id": 2, "customer_id": 2, "product_id": 2, "quantity": 1},
         ]
 
         response = requests.get(self.ORDER_URL)
@@ -37,7 +39,12 @@ class TestOrderEndpoints(unittest.TestCase):
     def test_get_order(self, mock_get):
         # Simulate a successful response
         mock_get.return_value.status_code = 200
-        mock_get.return_value.json.return_value = {"id": 1, "customer_id": 1, "product_id": 1, "quantity": 2}
+        mock_get.return_value.json.return_value = {
+            "id": 1,
+            "customer_id": 1,
+            "product_id": 1,
+            "quantity": 2,
+        }
 
         response = requests.get(f"{self.ORDER_URL}/1")
         self.assertEqual(response.status_code, 200)
@@ -67,6 +74,7 @@ class TestOrderEndpoints(unittest.TestCase):
         response = requests.delete(f"{self.ORDER_URL}/1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Order deleted successfully", response.json()["message"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,8 +1,10 @@
 import unittest
 from unittest.mock import patch
+
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"  # Update if running on a different port or domain
+
 
 class TestProductEndpoints(unittest.TestCase):
     PRODUCT_URL = f"{BASE_URL}/api/products"
@@ -26,7 +28,7 @@ class TestProductEndpoints(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [
             {"id": 1, "name": "Product A", "price": 99.99},
-            {"id": 2, "name": "Product B", "price": 49.99}
+            {"id": 2, "name": "Product B", "price": 49.99},
         ]
 
         response = requests.get(self.PRODUCT_URL)
@@ -37,7 +39,11 @@ class TestProductEndpoints(unittest.TestCase):
     def test_get_product(self, mock_get):
         # Simulate a successful response
         mock_get.return_value.status_code = 200
-        mock_get.return_value.json.return_value = {"id": 1, "name": "Product A", "price": 99.99}
+        mock_get.return_value.json.return_value = {
+            "id": 1,
+            "name": "Product A",
+            "price": 99.99,
+        }
 
         response = requests.get(f"{self.PRODUCT_URL}/1")
         self.assertEqual(response.status_code, 200)
@@ -67,6 +73,7 @@ class TestProductEndpoints(unittest.TestCase):
         response = requests.delete(f"{self.PRODUCT_URL}/1")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Product deleted successfully", response.json()["message"])
+
 
 if __name__ == "__main__":
     unittest.main()
