@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash
-from app.models.models import User, Customer, db  # Ensure Customer is imported
+from app.models.models import User, Customer, db
 from app.utils.util import encode_token, decode_token
 from app.utils.decorator import role_required
 
 # Blueprint for users module
 users_bp = Blueprint('users', __name__)
+
 
 # Login endpoint
 @users_bp.route('/login', methods=['POST'])
@@ -17,45 +18,39 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    # Find user in the database
     user = User.query.filter_by(username=username).first()
 
     if user and check_password_hash(user.password, password):
-        # Extract roles from the user
         role_names = [role.role_name for role in user.roles]
-        # Generate a JWT token
         auth_token = encode_token(user.id, role_names)
-        resp = {
+        return jsonify({
             "status": "success",
             "message": "Successfully logged in",
             "auth_token": auth_token
-        }
-        return jsonify(resp), 200
+        }), 200
     else:
-        # Invalid username or password
-        resp = {
+        return jsonify({
             "status": "fail",
             "message": "Invalid username or password"
-        }
-        return jsonify(resp), 401
+        }), 401
+
 
 # Get all customers endpoint (admin-only)
 @users_bp.route('/api/customers', methods=['GET'])
-@role_required(['admin'])  # Enforce access for admin role
+@role_required(['admin'])
 def get_customers():
     """
     Retrieve all customers (admin-only).
     """
     try:
-        # Fetch all customers from the database
         customers = Customer.query.all()
         return jsonify([
             {'id': cust.id, 'name': cust.name, 'email': cust.email, 'phone': cust.phone}
             for cust in customers
         ]), 200
     except Exception as e:
-        # Handle potential database or query errors
         return jsonify({"message": f"Error retrieving customers: {str(e)}"}), 500
+
 
 # Inspect token endpoint
 @users_bp.route('/inspect-token', methods=['GET'])
@@ -69,8 +64,37 @@ def inspect_token():
 
     token = auth_header.split(" ")[1]
     try:
-        # Decode the token
         payload = decode_token(token)
         return jsonify(payload), 200
     except Exception as e:
         return jsonify({"message": f"Token invalid! {str(e)}"}), 401
+
+
+# Update user (admin-only)
+@users_bp.route('/<int:user_id>', methods=['PUT'])
+@role_required(['admin'])
+def update_user(user_id):
+    """
+    Update user information (admin-only).
+    """
+    data = request.get_json()
+    user = User.query.get_or_404(user_id)
+
+    user.username = data.get('username', user.username)
+    user.email = data.get('email', user.email)
+
+    db.session.commit()
+    return jsonify({"message": "User updated successfully"}), 200
+
+
+# Delete user (admin-only)
+@users_bp.route('/<int:user_id>', methods=['DELETE'])
+@role_required(['admin'])
+def delete_user(user_id):
+    """
+    Delete a user (admin-only).
+    """
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": "User deleted successfully"}), 200

@@ -55,6 +55,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /employees/{id}:
+    get:
+      summary: Retrieve an employee by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the employee to retrieve
+      responses:
+        '200':
+          description: Employee details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update an existing employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the employee to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCreate'
+      responses:
+        '200':
+          description: Employee updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          description: Employee not found
+        '400':
+          description: Bad request, invalid input
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete an employee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the employee to delete
+      responses:
+        '200':
+          description: Employee deleted successfully
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
   /products:
     get:
       summary: List all products
@@ -100,6 +166,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /products/{id}:
+    get:
+      summary: Retrieve a product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the product to retrieve
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update an existing product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the product to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '400':
+          description: Bad request, invalid input
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the product to delete
+      responses:
+        '200':
+          description: Product deleted successfully
+        '404':
+          description: Product not found
+        '500':
+          description: Internal server error
 
   /customers:
     get:
@@ -274,9 +406,9 @@ paths:
       parameters:
         - in: path
           name: id
+          required: true
           schema:
             type: integer
-          required: true
           description: ID of the order
       responses:
         '200':

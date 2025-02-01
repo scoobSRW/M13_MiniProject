@@ -1,4 +1,3 @@
-# Updated orders.routes
 from flask import Blueprint, jsonify, request
 from app.models.models import Order, db
 from flask_limiter import Limiter
@@ -48,3 +47,30 @@ def get_orders():
         'page': orders.page,
         'pages': orders.pages
     }), 200
+
+# update an order (5 requests per minute)
+@orders_bp.route('/<int:order_id>', methods=['PUT'])
+@limiter.limit("5 per minute")
+def update_order(order_id):
+    data = request.get_json()
+    order = Order.query.get_or_404(order_id)
+    if 'product_id' in data:
+        product = Product.query.get(data['product_id'])
+        if not product:
+            return jsonify({'error': 'Product not found'}), 404
+        order.product_id = data['product_id']
+        order.total_price = product.price * order.quantity
+    if 'quantity' in data:
+        order.quantity = data['quantity']
+        order.total_price = order.total_price / order.quantity * data['quantity']
+    db.session.commit()
+    return jsonify({'message': 'Order updated successfully'}), 200
+
+# delete an order (5 requests per minute)
+@orders_bp.route('/<int:order_id>', methods=['DELETE'])
+@limiter.limit("5 per minute")
+def delete_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    return jsonify({'message': 'Order deleted successfully'}), 200

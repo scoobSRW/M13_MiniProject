@@ -33,5 +33,40 @@ class TestCustomerEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
 
+    @patch("requests.get")
+    def test_get_customer(self, mock_get):
+        # Simulate a successful response
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {"id": 1, "name": "Alice", "email": "alice@example.com", "phone": "1234567890"}
+
+        response = requests.get(f"{self.CUSTOMER_URL}/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Alice", response.json()["name"])
+
+    @patch("requests.put")
+    def test_update_customer(self, mock_put):
+        # Simulate a successful response
+        mock_put.return_value.status_code = 200
+        mock_put.return_value.json.return_value = {
+            "message": "Customer updated successfully"
+        }
+
+        payload = {"name": "Alice Updated", "email": "aliceupdated@example.com", "phone": "1111111111"}
+        response = requests.put(f"{self.CUSTOMER_URL}/1", json=payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Customer updated successfully", response.json()["message"])
+
+    @patch("requests.delete")
+    def test_delete_customer(self, mock_delete):
+        # Simulate a successful response
+        mock_delete.return_value.status_code = 200
+        mock_delete.return_value.json.return_value = {
+            "message": "Customer deleted successfully"
+        }
+
+        response = requests.delete(f"{self.CUSTOMER_URL}/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Customer deleted successfully", response.json()["message"])
+
 if __name__ == "__main__":
     unittest.main()
