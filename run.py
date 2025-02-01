@@ -1,7 +1,6 @@
 from flask import send_from_directory
 
 from app import create_app
-from app.blueprints.swagger import swagger_blueprint
 from config import DevelopmentConfig
 
 # Create the Flask app
