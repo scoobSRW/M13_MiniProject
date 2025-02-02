@@ -33,11 +33,9 @@ jobs:
           flake8 app --ignore=E501  # Ignore long line warnings
 
       - name: Run Unit Tests (unittest)
-        run: python -m unittest discover tests
-
-      - name: Run Pytest
-        run: pytest tests/ --disable-warnings
+        run: |
+          $env:PYTHONWARNINGS="ignore"
+          python -m unittest discover tests
 
       - name: Ensure Application Builds
         run: python run.py  # Ensure the Flask app starts up without errors
-
