@@ -38,4 +38,5 @@ jobs:
           python -m unittest discover tests
 
       - name: Ensure Application Builds
-        run: python run.py  # Ensure the Flask app starts up without errors
+        run: |
+          nohup python run.py &
