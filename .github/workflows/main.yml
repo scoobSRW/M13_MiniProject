@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Unit Tests (unittest)
         run: |
-          $env:PYTHONWARNINGS="ignore"
+          export PYTHONWARNINGS="ignore"
           python -m unittest discover tests
 
       - name: Ensure Application Builds
